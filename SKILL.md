@@ -14,6 +14,8 @@ record count is right, the content is right — and the diff is 391 lines instea
 again answer "what did this commit change". Writing "keep the indent" into a memory did not stop it
 happening a third time; a machine check did.
 
+> **Paths.** Commands in this skill start with `${…SKILL_DIR}`: this skill's own folder, the one that contains this SKILL.md. Claude Code fills it in. If your agent shows the placeholder as written (Codex, Cursor, Gemini CLI and others), replace it with that folder's absolute path before you run the command. Left as it is, it expands to nothing and the path breaks.
+
 ## When this applies
 
 - You just edited a tracked `.json` / `.yaml` / `.yml` file through code and are about to commit.
