@@ -24,6 +24,14 @@ The full procedure, the boundaries and where the rules came from are in [SKILL.m
 3. New files have no baseline; they are listed, not judged
 4. To make it automatic, install the pre-commit snippet in `references/pre-commit.md`…
 
+## Why it is built this way
+
+**The idea.** A rewritten data file passes every validator and destroys the diff. Writing "keep the indent" into a memory did not stop it happening a third time; a machine check did.
+
+**Where it came from.** Own practice, 2026-08: the same mistake three times in one month across two repositories (a devlog rewritten with `indent=1`, a fix script with `indent=1`, a sources file two weeks later).
+
+**Evidence.** What was broken on purpose to show that the self-tests can fail is under [Verify](#verify); what was run end to end, and in which agent, is under [Compatibility](#compatibility).
+
 ## Install
 
 Pick one of four ways: three for Claude Code, one for OpenAI Codex. Skills load when a session starts, so open a **new** session after installing.
