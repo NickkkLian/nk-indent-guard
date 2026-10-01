@@ -1,13 +1,47 @@
 # nk-indent-guard
 
-![nk-indent-guard](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/social/nk-indent-guard.png)
-
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
+
+**What you get.** One real run of nk-indent-guard 0.1.2, copied from the terminal on 2026-09-30:
+
+```text
+$ python3 scripts/indent_guard.py
+✘ .claude-plugin/plugin.json: 2 spaces → 1 space  (whole file re-indented; rewrite it with the original unit)
+✘ 1 re-indented, 0 unchanged, 0 new (vs HEAD, ext .json,.yaml,.yml)
+```
+
+![nk-indent-guard](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/social/nk-indent-guard.png)
 
 Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills) — skills that stop an AI coding agent's
 "done, tested, safe" from being taken on faith.
 
+## Try it
+
+Nothing is installed and nothing under `~/.claude` changes: clone, run the self-test, run the example (it only writes inside the clone).
+
+```bash
+git clone https://github.com/NickkkLian/nk-indent-guard && cd nk-indent-guard
+python3 scripts/indent_guard.py --selftest
+python3 -c "import json; p = '.claude-plugin/plugin.json'; json.dump(json.load(open(p)), open(p, 'w'), indent=1)"
+python3 scripts/indent_guard.py
+git checkout .claude-plugin/plugin.json
+```
+
+The self-test prints:
+
+```text
+indent_guard selftest · 15/15 passed
+```
+
+The last command prints the block at the top of this page; its last line is the one below, and its exit code is 1 (non-zero on purpose: it found something).
+
+```text
+✘ 1 re-indented, 0 unchanged, 0 new (vs HEAD, ext .json,.yaml,.yml)
+```
+
 ![nk-indent-guard demo: before and after](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/nk-indent-guard.gif)
+
+The demo above is a rendering of an earlier run and cuts its longest lines short; the block at the top of this page is a full run of this version. It also shows "1 spaces", which 0.1.1 printed; 0.1.2 prints "1 space".
 
 ## What it does
 
@@ -19,10 +53,10 @@ The full procedure, the boundaries and where the rules came from are in [SKILL.m
 
 ## How it works
 
-1. After editing, before committing
-2. A red line names the file and the change of unit…
-3. New files have no baseline; they are listed, not judged
-4. To make it automatic, install the pre-commit snippet in `references/pre-commit.md`…
+1. After editing, before committing: `python3 scripts/indent_guard.py` (whole repo) or `python3 scripts/indent_guard.py data/` (a subtree); `--ref` compares against another revision, `--ext` changes the extensions.
+2. A red line names the file and the change of unit (`2 spaces → 1 space`, `4 spaces → tab`, `2 spaces → none` for pretty → single line).
+3. New files have no baseline; they are listed, not judged.
+4. To make it automatic, install the pre-commit snippet in `references/pre-commit.md` (hooks live in `.git/hooks`, so every clone installs it once).
 
 ## Why it is built this way
 
@@ -109,9 +143,14 @@ In this skill's Codex run, every call into the skill folder's scripts/ used that
 python3 scripts/indent_guard.py --selftest
 ```
 
-Standard library only, Python 3.9+. Before publishing, the guarded lines of each script were
-mutated one at a time in a sandbox copy and the self-test was confirmed to go red on the named
-assertion, without a traceback; the unmutated control stayed green.
+Standard library only, Python 3.9+, and git. On 2026-09-30 every self-test above passed, and
+`breakcheck.py` from [nk-breakable-selftest](https://github.com/NickkkLian/nk-breakable-selftest) broke each script on purpose in a sandbox copy:
+
+- `indent_guard.py`: 3 lines broken one at a time; each turned the self-test red without a traceback.
+
+The unmutated control stayed green every time. Only lines that record a finding, raise, or return a failing exit code
+were broken (the tool's pattern, or the hand-written list); a line number refers to the script as shipped in this version.
+This shows those lines are covered. It does not show that nothing else can fail.
 
 ## Limits
 
