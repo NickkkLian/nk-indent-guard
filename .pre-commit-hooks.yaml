@@ -1,0 +1,7 @@
+# For the pre-commit framework (https://pre-commit.com). The hook is the script itself: Python 3.9+ and git, nothing to install.
+- id: indent-guard
+  name: indent-guard (a data file was re-indented)
+  description: Refuse a commit in which a JSON or YAML file changed its indentation unit and buried the real change in a whole-file diff.
+  entry: scripts/indent_guard.py
+  language: script
+  files: \.(json|ya?ml)$
