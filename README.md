@@ -2,7 +2,7 @@
 
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
 
-**What you get.** One real run of nk-indent-guard 0.1.3, copied from the terminal on 2026-10-09:
+**What you get.** One real run of nk-indent-guard 0.1.4, copied from the terminal on 2026-10-10:
 
 ```text
 $ python3 scripts/indent_guard.py
@@ -66,21 +66,25 @@ If your repository already uses the [pre-commit](https://pre-commit.com) framewo
 ```yaml
 repos:
   - repo: https://github.com/NickkkLian/nk-indent-guard
-    rev: <a commit id of this repository>
+    rev: v0.1.4
     hooks:
       - id: indent-guard
 ```
 
-`rev` has to be a tag or a commit id. This repository has no tags, so use the id of its newest commit:
-`git ls-remote https://github.com/NickkkLian/nk-indent-guard HEAD` prints it. The hook is the script itself (`language: script` in
+`rev` takes a version tag, as in the block above, or a commit id. `git ls-remote https://github.com/NickkkLian/nk-indent-guard`
+lists this repository's tags and the id of its newest commit. The hook is the script itself (`language: script` in
 [.pre-commit-hooks.yaml](.pre-commit-hooks.yaml)): it needs `python3` (3.9 or newer) and git on the machine, and the framework installs
 nothing for it. It is given the staged `.json`, `.yaml` and `.yml` files. A repository without the framework uses the plain git hook in
 [references/pre-commit.md](references/pre-commit.md).
 
-How far this was checked (2026-10-09): the manifest was read against the framework's documentation and its manifest schema, and the
+How far this was checked. On 2026-10-09 the manifest was read against the framework's documentation and its manifest schema, and the
 script was started by a hand-written git hook the way that documentation describes for this hook type (the file itself, from the
 repository root, with the staged data files as arguments): a one-line edit was committed, a re-indented file was refused under
-`git commit -a`. It was not run under the pre-commit framework itself, and not on Windows.
+`git commit -a`. On 2026-10-10 it was run under pre-commit 4.6.2 on macOS 15.7 (Apple silicon, git 2.39.3, Python 3.13), with the
+framework cloning this repository at its 0.1.3 commit from a local copy: `git commit` passed a one-line edit, was refused for a
+re-indented JSON file and again under `git commit -a` for a re-indented JSON and YAML file, and `pre-commit run --all-files` failed
+while the re-indented file was there and passed once it was put back. The script and `.pre-commit-hooks.yaml` are unchanged in 0.1.4.
+It was not run from the GitHub address, on Linux or on Windows, or under another pre-commit version.
 
 ## Why it is built this way
 
@@ -167,7 +171,7 @@ In this skill's Codex run, every call into the skill folder's scripts/ used that
 python3 scripts/indent_guard.py --selftest
 ```
 
-Standard library only, Python 3.9+, and git. On 2026-10-09 every self-test above passed, and
+Standard library only, Python 3.9+, and git. On 2026-10-10 every self-test above passed, and
 `breakcheck.py` from [nk-breakable-selftest](https://github.com/NickkkLian/nk-breakable-selftest) broke each script on purpose in a sandbox copy:
 
 - `indent_guard.py`: 3 lines broken one at a time; each turned the self-test red without a traceback.
@@ -181,7 +185,7 @@ This shows those lines are covered. It does not show that nothing else can fail.
 - It does not validate the content; pair it with your schema check.
 - It reads the first 200 lines to find the unit; a file whose first indented line is inconsistent with the rest is judged by that first line.
 - Key order changes, trailing-newline changes and reformatting inside a line are invisible to it — those also inflate diffs, but they are a different guard.
-- The pre-commit framework entry was checked against that framework's documentation and started by hand the way the documentation describes; it has not been run under the framework itself, and not on Windows.
+- The pre-commit framework entry was run under pre-commit 4.6.2 on macOS 15.7 on 2026-10-10, with the hook repository cloned from a local copy: it refused a re-indented file and passed a one-line edit. It was not run from the GitHub address, on Linux or on Windows.
 
 ## License
 
