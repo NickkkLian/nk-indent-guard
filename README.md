@@ -48,7 +48,7 @@ The demo above is a rendering of an earlier run and cuts its longest lines short
 - Compares the indentation unit of every tracked JSON/YAML file with the last committed version.
 - Names the file and the change (`2 spaces → 1 space`, `pretty → single line`, `spaces → tabs`).
 - Shows how to write files back with their own unit in Python and Node.
-- Runs on every commit in one of two ways: through the pre-commit framework (the repository carries the `.pre-commit-hooks.yaml` that framework reads; three lines in your config) or as a plain git hook.
+- Runs on every commit in one of two ways: through the pre-commit framework (the repository carries the `.pre-commit-hooks.yaml` that framework reads; four lines in your config) or as a plain git hook.
 
 The full procedure, the boundaries and where the rules came from are in [SKILL.md](SKILL.md).
 

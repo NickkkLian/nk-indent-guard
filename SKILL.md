@@ -33,7 +33,7 @@ happening a third time; a machine check did.
    `references/write-back.md` shows how to detect and preserve the unit in Python and Node.
 3. New files have no baseline; they are listed, not judged. Decide their unit deliberately.
 4. To make it automatic, use one of the two hooks in `references/pre-commit.md`. A repository that already uses
-   the pre-commit framework adds three lines to its `.pre-commit-config.yaml`; any other repository gets a plain
+   the pre-commit framework adds four lines to its `.pre-commit-config.yaml`; any other repository gets a plain
    `.git/hooks/pre-commit` file (hooks live in `.git/hooks`, so every clone installs it once).
 
 ## What it does not do
