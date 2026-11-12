@@ -2,7 +2,7 @@
 
 An agent skill for [Claude Code](https://code.claude.com) and [OpenAI Codex](https://developers.openai.com/codex). Stop a one-line edit to a JSON or YAML data file from re-indenting the whole file and burying the real change in a 400-line diff.
 
-**What you get.** One real run of nk-indent-guard 0.1.5, copied from the terminal on 2026-10-14:
+**What you get** (a real run): a data file that a one-line edit re-indented is named, with the old and the new indentation, before it reaches the commit.
 
 ```text
 $ python3 scripts/indent_guard.py
@@ -12,28 +12,22 @@ $ python3 scripts/indent_guard.py
 
 ![nk-indent-guard](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/social/nk-indent-guard.png)
 
-Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills) — skills that stop an AI coding agent's
-"done, tested, safe" from being taken on faith.
+Part of [nickkk-skills](https://github.com/NickkkLian/nickkk-skills): 14 agent skills that work with numbers, check an agent's work, guard a repository, and write and present.
 
 ## Try it
 
-Nothing is installed and nothing under `~/.claude` changes: clone, run the self-test, run the example (it only writes inside the clone).
+Clone and run the example (it re-indents one file inside the clone, runs the check, then puts the file back):
 
 ```bash
 git clone https://github.com/NickkkLian/nk-indent-guard && cd nk-indent-guard
-python3 scripts/indent_guard.py --selftest
 python3 -c "import json; p = '.claude-plugin/plugin.json'; json.dump(json.load(open(p)), open(p, 'w'), indent=1)"
 python3 scripts/indent_guard.py
 git checkout .claude-plugin/plugin.json
 ```
 
-The self-test prints:
+None of this installs anything or changes `~/.claude`.
 
-```text
-indent_guard selftest · 16/16 passed
-```
-
-The last command prints the block at the top of this page; its last line is the one below, and its exit code is 1 (non-zero on purpose: it found something).
+The `indent_guard.py` line prints the block at the top of this page; its last line is the one below, and its exit code is 1 (non-zero on purpose: it found something).
 
 ```text
 ✘ 1 re-indented, 1 unchanged, 0 new (vs HEAD, ext .json,.yaml,.yml)
@@ -41,7 +35,7 @@ The last command prints the block at the top of this page; its last line is the 
 
 ![nk-indent-guard demo: before and after](https://raw.githubusercontent.com/NickkkLian/nickkk-skills/main/gallery/nk-indent-guard.gif)
 
-The demo above is a rendering of an earlier run and cuts its longest lines short; the block at the top of this page is a full run of this version. It also shows "1 spaces", which 0.1.1 printed; 0.1.2 prints "1 space".
+The demo above is a rendering of an earlier run and cuts its longest lines short; the block at the top of this page is a full run of this version.
 
 ## What it does
 
@@ -76,19 +70,6 @@ lists this repository's tags and the id of its newest commit. The hook is the sc
 [.pre-commit-hooks.yaml](.pre-commit-hooks.yaml)): it needs `python3` (3.9 or newer) and git on the machine, and the framework installs
 nothing for it. It is given the staged `.json`, `.yaml` and `.yml` files. A repository without the framework uses the plain git hook in
 [references/pre-commit.md](references/pre-commit.md).
-
-How far this was checked. On 2026-10-09 the manifest was read against the framework's documentation and its manifest schema, and the
-script was started by a hand-written git hook the way that documentation describes for this hook type (the file itself, from the
-repository root, with the staged data files as arguments): a one-line edit was committed, a re-indented file was refused under
-`git commit -a`. On 2026-10-10 it was run under pre-commit 4.6.2 on macOS 15.7 (Apple silicon, git 2.39.3, Python 3.13), with the
-framework cloning this repository at its 0.1.3 commit from a local copy: `git commit` passed a one-line edit, was refused for a
-re-indented JSON file and again under `git commit -a` for a re-indented JSON and YAML file, and `pre-commit run --all-files` failed
-while the re-indented file was there and passed once it was put back. The script and `.pre-commit-hooks.yaml` are unchanged in 0.1.4
-and 0.1.5. Later on 2026-10-10, after 0.1.4 was released, it was run again the same way with the framework cloning
-`https://github.com/NickkkLian/nk-indent-guard` at tag `v0.1.4` (the block above as the 0.1.4 README printed it): `git commit` passed a
-one-line edit, skipped a commit that touched no data file and was refused for a re-indented JSON file, and `pre-commit run --all-files`
-failed while that file was there and passed once it was put back. It was not run on Linux or on Windows, or under another pre-commit
-version.
 
 ## Why it is built this way
 
@@ -175,14 +156,35 @@ In this skill's Codex run, every call into the skill folder's scripts/ used that
 python3 scripts/indent_guard.py --selftest
 ```
 
+The self-test prints:
+
+```text
+indent_guard selftest · 16/16 passed
+```
+
+The run at the top of this page is nk-indent-guard 0.1.5, copied from the terminal on 2026-10-14. The demo GIF also shows "1 spaces", which 0.1.1 printed; 0.1.2 prints "1 space".
+
 Standard library only, Python 3.9+, and git. On 2026-10-14 every self-test above passed, and
-`breakcheck.py` from [nk-breakable-selftest](https://github.com/NickkkLian/nk-breakable-selftest) broke each script on purpose in a sandbox copy:
+a break-check script broke each script on purpose in a sandbox copy:
 
 - `indent_guard.py`: 3 lines broken one at a time; each turned the self-test red without a traceback.
 
 The unmutated control stayed green every time. Only lines that record a finding, raise, or return a failing exit code
 were broken (the tool's pattern, or the hand-written list); a line number refers to the script as shipped in this version.
 This shows those lines are covered. It does not show that nothing else can fail.
+
+How far this was checked. On 2026-10-09 the manifest was read against the framework's documentation and its manifest schema, and the
+script was started by a hand-written git hook the way that documentation describes for this hook type (the file itself, from the
+repository root, with the staged data files as arguments): a one-line edit was committed, a re-indented file was refused under
+`git commit -a`. On 2026-10-10 it was run under pre-commit 4.6.2 on macOS 15.7 (Apple silicon, git 2.39.3, Python 3.13), with the
+framework cloning this repository at its 0.1.3 commit from a local copy: `git commit` passed a one-line edit, was refused for a
+re-indented JSON file and again under `git commit -a` for a re-indented JSON and YAML file, and `pre-commit run --all-files` failed
+while the re-indented file was there and passed once it was put back. The script and `.pre-commit-hooks.yaml` are unchanged in 0.1.4
+and 0.1.5. Later on 2026-10-10, after 0.1.4 was released, it was run again the same way with the framework cloning
+`https://github.com/NickkkLian/nk-indent-guard` at tag `v0.1.4` (the configuration block under [Use it from pre-commit](#use-it-from-pre-commit), as the 0.1.4 README printed it): `git commit` passed a
+one-line edit, skipped a commit that touched no data file and was refused for a re-indented JSON file, and `pre-commit run --all-files`
+failed while that file was there and passed once it was put back. It was not run on Linux or on Windows, or under another pre-commit
+version.
 
 ## Limits
 
